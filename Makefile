@@ -9,7 +9,6 @@ system-packages:
 
 python-packages:
 	pip install -r requirements.txt
-	pip install -e .
 
 install: system-packages python-packages
 
@@ -18,6 +17,6 @@ unit-tests:
 tests: unit-tests
 
 run:
-	python -m pa_microservice
+	python -m app
 
 all: install tests run

@@ -1,11 +1,11 @@
-Micro Services with Ports and Adapters Architecture
-===================================================
+Micro Service with Ports and Adapters Architecture
+==================================================
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project is a sample application that uses the ports and adapters architecture (or hexagonal architecture) for the development of a simple micro service.
+This project is a simple micro service of a REST API for library management. It was developed using the ports and adapters architecture (or hexagonal architecture).
 
-This project was created in order to facilitate the study of this software development pattern and the yearning for learning.
+The project was created in order to facilitate the study of the ports and adapters architecture and other software development patterns.
 
 ## Architecture
 
@@ -15,3 +15,4 @@ This project was created in order to facilitate the study of this software devel
 * [Ports and Adapters Pattern](https://softwarecampament.wordpress.com/portsadapters/#tc2-1)
 * [Ports & Adapters Architecture](https://herbertograca.com/2017/09/14/ports-adapters-architecture/)
 * [Build Maintainable Systems With Hexagonal Architecture](https://java-design-patterns.com/blog/build-maintainable-systems-with-hexagonal-architecture/)
+* [Hexagonal Architecture](https://fideloper.com/hexagonal-architecture)

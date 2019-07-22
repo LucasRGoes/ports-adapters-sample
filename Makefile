@@ -17,6 +17,6 @@ unit-tests:
 tests: unit-tests
 
 run:
-	python -m app
+	@python -m app
 
 all: install tests run

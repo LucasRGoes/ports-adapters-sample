@@ -1,21 +1,23 @@
-"""A memory driver adapter for data storage."""
+"""A memory driven adapter for data storage."""
 
 from ..logic import Book
-from ..ports import BookStorage
+from ..ports import BookRepository
 
-class MemoryAdapter(BookStorage):
-	"""A memory adapter class that implements the BookStorage from ports using the Repository pattern."""
+
+class MemoryRepository(BookRepository):
+	"""A memory adapter class that implements the BookRepository from ports
+	that uses the Repository pattern.
+
+	Extends: BookRepository
+
+	Methods: add_new_book, borrow_book, return_book
+	"""
 	def __init__(self):
-		"""MemoryAdapter's constructor."""
+		"""MemoryRepository's constructor."""
 		self.books = {}
 
-	def register(self, book: Book):
-		"""Registers a new book at database.
-	
-		Params
-		------
-		book: Book -- the book to be stored
-		"""
+	def add_new_book(self, book: Book):
+		"""View @BookRepository.add_new_book"""
 		has_book = self.books.get(book.isbn)
 
 		if has_book is not None:
@@ -24,10 +26,17 @@ class MemoryAdapter(BookStorage):
 			self.books[book.isbn] = {'author': book.author, 'name': book.name,
 									 'total': 1, 'lent': 0}
 
-	def borrow(self, isbn: str):
-		"""'Borrows' a book from database.
+	def borrow_book(self, isbn: str):
+		"""View @BookRepository.borrow_book"""
+		book_data = self.books.get(book.isbn)
 
-		Params
-		------
-		isbn: str -- the isbn of the book to borrow
-		"""
+		if book_data is not None and :
+			self.books[book.isbn]['lent'] += 1
+			return Book(book_data.get('author'), isbn, book_data.get('name'))
+		else:
+			return None
+
+
+	def return_book(self, isbn: str):
+		"""View @BookRepository.return_book"""
+		pass

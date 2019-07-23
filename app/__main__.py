@@ -1,15 +1,13 @@
 """
 Micro Service with Ports and Adapters Architecture
 ==================================================
-The application's entry point. Loads and configures the adapters to be used
-by the application.
+The application's entry point. Loads, configures and starts the application.
 
 __license__ =  MIT
 __author__ = 'Lucas Góes'
 __email__ = 'lucas.rd.goes@gmail.com'
 """
 
-import time
 import logging
 
 from . import ports, adapters, settings

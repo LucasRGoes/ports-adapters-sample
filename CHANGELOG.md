@@ -19,3 +19,8 @@ Changelog
 	* Organizing settings.py to use configuration classes;
 	* Started usage of DI and configuration at __main__;
 	* Created memory driver adapter for storage;
+
+* __06-23-2019__:
+	* Reorganized modules logic.py and ports.py to domain.py and controller.py;
+	* Rethinked the application's ports;
+	* Created UnitOfWorkManager and UnitOfWork for the usage of the Unit of Work design pattern;

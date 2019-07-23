@@ -1,19 +1,21 @@
 """The application's source of exception classes.
 
-Classes: SampleError, CommandNotFoundError.
+Classes: GenericApplicationError, CommandNotFoundError
 """
 
-class SampleError(Exception):
+class GenericApplicationError(Exception):
 	"""Generic error to be implemented by further classes in order to uncouple
 	the application's exceptions from others.
+
+	Extends: Exception
 	"""
 	pass
 
 
-class CommandNotFoundError(SampleError):
+class CommandNotFoundError(GenericApplicationError):
 	"""To be raised when a non existant command is inserted into the command
 	bus.
 
-	Extends: SampleError.
+	Extends: GenericApplicationError
 	"""
 	pass

@@ -73,7 +73,7 @@ class ApplicationConfig(Config):
 		-------
 		driven_adapter: str
 		"""
-		return os.getenv('APP_DRIVEN_ADAPTER', 'MEMORY').lower()
+		return os.getenv('APP_DRIVEN_ADAPTER', 'memory').lower()
 
 
 class MqttDriverConfig(Config):
@@ -87,7 +87,7 @@ class MqttDriverConfig(Config):
 		-------
 		topic: str
 		"""
-		return os.getenv('MQTT_DRIVER_TOPIC', 'app/book/+')
+		return os.getenv('MQTT_DRIVER_TOPIC', 'app/book/#')
 
 	@property
 	def host(self) -> str:

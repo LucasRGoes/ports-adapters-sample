@@ -92,26 +92,66 @@ def register_book_command_handler(uowm: UnitOfWorkManager,
 
 
 def read_book_command_handler(view: BookView, cmd: ReadBookCommand):
-	pass
+	"""Handler for getting the content of a chosen book.
+
+	Params
+	------
+	view: BookView -- a view to handle database queries
+	cmd: ReadBookCommand -- the expected read book command
+	"""
+	book = view.get_by_isbn(cmd.isbn)
+
+	if book is not None:
+		return book.content
+	else:
+		return None
 
 
 def view_books_command_handler(view: BookView, cmd: ViewBooksCommand):
-	pass
+	"""Handler for getting all books.
+
+	Params
+	------
+	view: BookView -- a view to handle database queries
+	cmd: ViewBooksCommand -- the expected view books command
+	"""
+	return view.get_all()
 
 
 def view_book_by_isbn_command_handler(view: BookView,
 									  cmd: ViewBookByIsbnCommand):
-	pass
+	"""Handler for getting a book by its ISBN.
+
+	Params
+	------
+	view: BookView -- a view to handle database queries
+	cmd: ViewBookByIsbnCommand -- the expected view book by ISBN command
+	"""
+	return view.get_by_isbn(cmd.isbn)
 
 
 def view_book_by_name_command_handler(view: BookView,
 									  cmd: ViewBooksByNameCommand):
-	pass
+	"""Handler for getting all books by their names.
+
+	Params
+	------
+	view: BookView -- a view to handle database queries
+	cmd: ViewBooksByNameCommand -- the expected view books by name command
+	"""
+	return view.get_by_name(cmd.name)
 
 
 def view_book_by_author_command_handler(view: BookView,
 										cmd: ViewBooksByAuthorCommand):
-	pass
+	"""Handler for getting all books by their author.
+
+	Params
+	------
+	view: BookView -- a view to handle database queries
+	cmd: ViewBooksByAuthorCommand -- the expected view books by author command
+	"""
+	return view.get_by_author(cmd.author)
 
 
 class CommandBus(object):

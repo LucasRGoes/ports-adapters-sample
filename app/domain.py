@@ -40,6 +40,17 @@ class Book(object):
 		self.author = author
 		self.content = content
 
+	def __str__(self):
+		"""End user's representation."""
+		return ('My name is {0}, a book written by {1} with ISBN: {2}.'
+				' Here is my content: {3}' \
+				.format(self.name, self.author, self.isbn, self.content))
+
+	def __repr__(self):
+		"""Programmer's representation."""
+		return 'Book(isbn={0}, name={1}, author={2}, content={3})' \
+			   .format(self.isbn, self.name, self.author, self.content)
+
 
 """
 	These are the application's commands, or its API (Application Programming
@@ -95,7 +106,7 @@ class BookView(object):
 	"""BookView is an interface for driven adapters that communicate with
 	databases concerning data querying methods.
 
-	Methdos: get_all, get_by_isbn, get_by_name, get_by_author
+	Methods: get_all, get_by_isbn, get_by_name, get_by_author
 	"""
 	def get_all(self) -> list:
 		"""Method to be implemented to fetch all books from the database.

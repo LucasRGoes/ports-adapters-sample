@@ -24,3 +24,5 @@ Changelog
 	* Reorganized modules logic.py and ports.py to domain.py and controller.py;
 	* Rethinked the application's ports;
 	* Created UnitOfWorkManager and UnitOfWork for the usage of the Unit of Work design pattern;
+	* Implemented the memory storage adapter's classes;
+ 	* First working example completed;

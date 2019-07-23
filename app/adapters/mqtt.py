@@ -5,7 +5,9 @@ import logging
 
 import paho.mqtt.client as mqtt
 
-from ..ports import RegisterBookCommand, BorrowBookCommand, ReturnBookCommand
+from ..domain import RegisterBookCommand, ReadBookCommand, ViewBooksCommand, \
+					 ViewBookByIsbnCommand, ViewBooksByNameCommand, \
+					 ViewBooksByAuthorCommand
 
 
 class MqttAdapter(object):
@@ -82,14 +84,26 @@ class MqttAdapter(object):
 							 .format(topic, payload))
 
 			if 'register' in topic:
-				cmd = RegisterBookCommand(payload['author'], payload['isbn'],
-										  payload['name'])
-			elif 'borrow' in topic:
-				cmd = BorrowBookCommand(payload['isbn'])
-			elif 'return' in topic:
-				cmd = ReturnBookCommand(payload['isbn'])
+				cmd = RegisterBookCommand(
+					payload['isbn'], payload['name'], payload['author'],
+					payload['content']
+				)
+			elif 'read' in topic:
+				cmd = ReadBookCommand(payload['isbn'])
+			elif 'view/isbn' in topic:
+				cmd = ViewBookByIsbnCommand(payload['isbn'])
+			elif 'view/name' in topic:
+				cmd = ViewBooksByNameCommand(payload['name'])
+			elif 'view/author' in topic:
+				cmd = ViewBooksByAuthorCommand(payload['author'])
+			elif 'view' in topic:
+				cmd = ViewBooksCommand()
 
-			self.command_bus.dispatch(cmd)
+			self.logger.debug('Command created: {0}'.format(cmd))
+
+			ret = self.command_bus.dispatch(cmd)
+			if ret is not None:
+				self.logger.info('Response: {0}'.format(ret))
 
 		return on_message
 

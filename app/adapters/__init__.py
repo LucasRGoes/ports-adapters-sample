@@ -8,6 +8,7 @@ implement the application's driven ports to be used by the application.
 """
 
 from .mqtt import MqttAdapter
+from .memory import MemoryUnitOfWorkManager, MemoryBookView
 
 
-__all__ = ['mqtt']
+__all__ = ['memory', 'mqtt']

@@ -26,3 +26,11 @@ Changelog
 	* Created UnitOfWorkManager and UnitOfWork for the usage of the Unit of Work design pattern;
 	* Implemented the memory storage adapter's classes;
  	* First working example completed;
+
+* __06-24-2019__:
+	* Using abstact base classes at the application's interfaces;
+	* Created new directories and renamed some modules to reorganize the project for simplicity;
+	* Renamed error classes;
+	* Started using Message Bus design pattern instead of the Command Bus design pattern;
+	* Started creation of events;
+	* Deleted domain.py and controller.py and added all of their content to the new domain dir and the handlers.py file;

@@ -34,3 +34,6 @@ Changelog
 	* Started using Message Bus design pattern instead of the Command Bus design pattern;
 	* Started creation of events;
 	* Deleted domain.py and controller.py and added all of their content to the new domain dir and the handlers.py file;
+	* Reviewing adapters;
+	* Using Builder pattern to set up the modules of the application;
+	* Creation decorator to help with the identification of the builders and adapters;

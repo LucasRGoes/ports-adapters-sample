@@ -1,30 +1,27 @@
-"""A MQTT driver adapter."""
+"""A MQTT driver adapter to act as an interface for the application."""
 
 import json
 import logging
 
 import paho.mqtt.client as mqtt
 
-from ..domain import RegisterBookCommand, ReadBookCommand, ViewBooksCommand, \
-					 ViewBookByIsbnCommand, ViewBooksByNameCommand, \
-					 ViewBooksByAuthorCommand
+from ..domain.messages import RegisterBookCommand, ReadBookCommand, \
+							  ViewBooksCommand, ViewBookByIsbnCommand, \
+							  ViewBooksByNameCommand, ViewBooksByAuthorCommand
 
 
-class MqttAdapter(object):
-	"""A MQTT adapter class that listens to incoming MQTT packages and
-	executes the associated commands.
+class Mqtt(object):
+	"""Listens to incoming MQTT packages and executes the associated commands.
 
-	Params
-	------
-	config: dict -- a dictionary containing the MQTT adapter's configuration
+	Methods: start, stop
 	"""
-	def __init__(self, config, command_bus):
-		"""MqttAdapter's constructor.
+	def __init__(self, cfg, msg_bus):
+		"""Mqtt's constructor.
 		
 		Params
 		------
-		config: -- MQTT adapter configuration
-		command_bus: -- the command bus to dispatch commands
+		cfg: -- MQTT client's configuration
+		msg_bus: -- the message bus used when dispatching commands
 		"""
 		self.logger = logging.getLogger(config.logger_name)
 		self.command_bus = command_bus

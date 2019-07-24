@@ -1,4 +1,7 @@
-"""The VERSION file is the sole source of the project's current version. This
+"""
+Version
+=======
+	The VERSION file is the sole source of the project's current version. This
 script was created exclusively to fetch its content for __main__.py usage.
 """
 

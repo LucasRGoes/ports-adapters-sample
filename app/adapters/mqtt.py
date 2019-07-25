@@ -5,8 +5,10 @@ import logging
 from multiprocessing import Process
 
 import paho.mqtt.client as mqtt
+import paho.mqtt.publish as publish
 
 from ..settings import identify
+from ..domain.ports import QueueSender
 from ..domain.messages import RegisterBookCommand
 
 
@@ -14,17 +16,17 @@ LOGGER = logging.getLogger('sample')
 
 
 @identify('mqtt', 'interface')
-class Mqtt(object):
+class MqttInterface(object):
 	"""Listens to incoming MQTT packages and executes the associated commands.
 
 	Methods: set_message_bus, set_view, start, stop
 	"""
 	def __init__(self, cfg: dict):
-		"""Mqtt's constructor.
+		"""MqttInterface's constructor.
 		
 		Params
 		------
-		cfg: dict -- the MQTT adapter's configuration
+		cfg: dict -- the MQTT interface adapter's configuration
 		"""
 		self.topic = cfg['topic']
 		self.host = cfg['host']
@@ -141,3 +143,34 @@ class Mqtt(object):
 					'Error at application execution: {0}'.format(err))
 
 		return on_message
+
+
+@identify('mqtt', 'sender')
+class MqttSender(QueueSender):
+	"""An MQTT implementation of a sender to dispatch the application's events.
+
+	Methods: send
+	"""
+	def __init__(self, cfg: dict):
+		"""MqttSender's constructor.
+		
+		Params
+		------
+		cfg: dict -- the MQTT sender adapter's configuration
+		"""
+		self.topic = cfg['topic']
+		self.host = cfg['host']
+		self.port = cfg['port']
+		self.username = cfg['username']
+		self.password = cfg['password']
+
+	def send(self, msg):
+		"""View @app.domain.ports.QueueSender."""
+		if self.username is not None and self.password is not None:
+			publish.single(
+				self.topic, payload=msg, hostname=self.host, port=self.port,
+				auth={'username': self.username, 'password': self.password}
+			)
+		else:
+			publish.single(
+				self.topic, payload=msg, hostname=self.host, port=self.port)

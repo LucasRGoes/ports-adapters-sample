@@ -103,10 +103,47 @@ class Director(object):
 
 		adapter = next(
 			cls_ for cls_ in classes \
-			if hasattr(cls_[1], 'tech') and hasattr(cls_[1], 'ctx')
+			if hasattr(cls_[1], 'tech') \
+			   and cls_[1].tech == self.builder.__class__.tech \
+			   and hasattr(cls_[1], 'ctx') \
+			   and cls_[1].ctx == self.builder.__class__.ctx
 		)[1]
 
 		return adapter(self.builder())
+
+
+@identify('memory', 'database')
+class MemoryDatabaseBuilder(Builder):
+	"""Builder class for setting up a memory database driven adapter.
+
+	Methods: __call__
+	"""
+	def __init__(self):
+		"""MemoryDatabaseBuilder's constructor."""
+		pass
+
+	def __call__(self) -> dict:
+		"""View @settings.Builder"""
+		return {}
+
+
+@identify('sqlite', 'database')
+class SqliteDatabaseBuilder(Builder):
+	"""Builder class for setting up a SQLite database driven adapter.
+
+	Methods: __call__, __get_location
+	"""
+	def __init__(self):
+		"""SqliteDatabaseBuilder's constructor."""
+		pass
+
+	def __call__(self) -> dict:
+		"""View @settings.Builder"""
+		return {'location': self.__get_location()}
+
+	def __get_location(self) -> str:
+		"""Returns location to store SQLite database."""
+		return os.getenv('SQLITE_DRIVER_LOCATION', 'db.sqlite')
 
 
 @identify('mqtt', 'interface')
@@ -185,41 +222,55 @@ class FlaskInterfaceBuilder(Builder):
 
 	def __get_debug(self) -> str:
 		"""Returns debug flag for Flask server."""
-		return os.getenv('FLASK_DRIVER_DEBUG', False)
+		if os.getenv('FLASK_DRIVER_DEBUG', False) in ['true', 'True', True]:
+			return True
+		else:
+			return False
 
 
-@identify('memory', 'database')
-class MemoryDatabaseBuilder(Builder):
-	"""Builder class for setting up a memory database driven adapter.
+@identify('mqtt', 'sender')
+class MqttSenderBuilder(Builder):
+	"""Builder class for setting up a MQTT driven adapter.
 
-	Methods: __call__
+	Methods: __call__, __get_topic, __get_host, __get_port, __get_username,
+	__get_password
 	"""
 	def __init__(self):
-		"""MemoryDatabaseBuilder's constructor."""
+		"""MqttSenderBuilder's constructor."""
 		pass
 
 	def __call__(self) -> dict:
 		"""View @settings.Builder"""
-		return {}
+		return {
+			'topic': self.__get_topic(),
+			'host': self.__get_host(),
+			'port': self.__get_port(),
+			'username': self.__get_username(),
+			'password': self.__get_password()
+		}
 
+	def __get_topic(self) -> str:
+		"""Returns MQTT topic for subscription."""
+		return os.getenv('MQTT_DRIVEN_TOPIC', 'app/event')
 
-@identify('sqlite', 'database')
-class SqliteDatabaseBuilder(Builder):
-	"""Builder class for setting up a SQLite database driven adapter.
+	def __get_host(self) -> str:
+		"""Returns host of the MQTT broker to connect."""
+		return os.getenv('MQTT_DRIVEN_HOST', 'localhost')
 
-	Methods: __call__, __get_location
-	"""
-	def __init__(self):
-		"""SqliteDatabaseBuilder's constructor."""
-		pass
+	def __get_port(self) -> int:
+		"""Returns port of the MQTT broker to connect."""
+		try:
+			return int(os.getenv('MQTT_DRIVEN_PORT'))
+		except:
+			return 1883
 
-	def __call__(self) -> dict:
-		"""View @settings.Builder"""
-		return {'location': self.__get_location()}
+	def __get_username(self) -> str:
+		"""Returns username to use on MQTT connection."""
+		return os.getenv('MQTT_DRIVEN_USERNAME')
 
-	def __get_location(self) -> str:
-		"""Returns location to store SQLite database."""
-		return os.getenv('SQLITE_DRIVER_LOCATION', 'db.sqlite')
+	def __get_password(self) -> str:
+		"""Returns password to use on MQTT connection."""
+		return os.getenv('MQTT_DRIVEN_PASSWORD')
 
 
 class ApplicationConfig(object):

@@ -46,3 +46,7 @@ Changelog
 	* Got application to work;
 	* Added coloredlogs library to debug the logs more easily;
 	* Adding flask adapter to act as an interface for the application;
+	* Created configuration example at .env.example;
+	* Created QueueSender abstract base class;
+	* Created MqttSender based on the QueueSender;
+	* Handlers for commands that generate events now need to have access to the bus to dispatch those events;

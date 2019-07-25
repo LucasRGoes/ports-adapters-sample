@@ -40,6 +40,31 @@ def main():
 	# Configuring senders.
 	logger.debug('Configuring senders ...')
 
+	try:
+		senders = app.senders
+		sender_adapters = []
+		for sender in senders:
+
+			sender_builder = next(
+				b for b in builders if b.tech == sender \
+									and b.ctx == 'sender'
+			)
+			
+			# Retrieving adapter and configuring it.
+			director.set_builder(sender_builder())
+			sender_adapters.append(director.get_adapter())
+
+	except StopIteration as err:
+		logger.error(
+			'The chosen sender \'{0}\' has no builder or adapter'
+			' implementation or one of them is not decorated with @identify' \
+			.format(sender)
+		)
+		sys.exit(1)
+
+	logger.info('Using \'{0}\' adapter(s) for the sender(s)' \
+				.format([type(i).__name__ for i in sender_adapters]))
+
 	# Configuring database.
 	logger.debug('Configuring database ...')
 
@@ -69,10 +94,21 @@ def main():
 	events.
 	"""
 	bus = domain.ports.MessageBus()
+
+	# Subscribes commands.
 	bus.subscribe(
 		domain.messages.RegisterBookCommand,
-		handlers.RegisterBookHandler(database_adapter.get_uowm())
+		handlers.RegisterBookHandler(bus, database_adapter.get_uowm())
 	)
+
+	# Subscribes events.
+	for sender_adapter in sender_adapters:
+		bus.subscribe(
+			domain.messages.BookRegisteredEvent,
+			handlers.BookRegisteredHandler(
+				database_adapter.get_view(), sender_adapter
+			)
+		)
 
 	# Configuring interfaces.
 	logger.debug('Configuring interfaces ...')

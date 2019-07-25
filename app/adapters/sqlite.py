@@ -142,16 +142,16 @@ class SqliteUnitOfWorkManager(UnitOfWorkManager):
 
 
 @identify('sqlite', 'database')
-class Sqlite(object):
+class SqliteDatabase(object):
 	"""This adapter gives access to each of the SQLite database classes that
 	are to be used by the app for data mutation an querying.
 
 	Methods: get_uowm, get_view
 	"""
 	def __init__(self, cfg: dict):
-		"""Sqlite's constructor.
+		"""SqliteDatabase's constructor.
 
-		cfg: dict -- The SQLite adapter's configuration
+		cfg: dict -- The SQLite database adapter's configuration
 		"""
 		self.location = cfg['location']
 

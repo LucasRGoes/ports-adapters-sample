@@ -7,7 +7,7 @@ the exchange of commands with driver adapters and events with driven adapters.
 It also offers interfaces for repositories to implement for database storage
 and querying.
 
-ABCs: BookRepository, BookView, UnitOfWork, UnitOfWorkManager
+ABCs: BookRepository, BookView, UnitOfWork, UnitOfWorkManager, Sender
 
 Classes: MessageBus
 """
@@ -162,6 +162,32 @@ class UnitOfWorkManager(abc.ABC):
 		Returns
 		-------
 		unit_of_work: UnitOfWork -- a unit of work for database usage
+		"""
+		pass
+
+
+"""
+	These are the abstract base class for senders to implement, or you could
+say it is the application's SPI for sending messages.
+	An application can have different types of abstract base classes for
+different types of senders like email, queues and logging. For this simple
+app we are gonna implement only one base type.
+"""
+class QueueSender(abc.ABC):
+	"""This abstract base class should be implemented by all adapters used to
+	dispatch messages to queues in case a certain event occurs on the
+	application.
+
+	Methods: send
+	"""
+	@abc.abstractmethod
+	def send(self, msg):
+		"""The sender builds a message based on the event and sends it to its
+		queue.
+
+		Params
+		------
+		msg -- the msg to be sent
 		"""
 		pass
 

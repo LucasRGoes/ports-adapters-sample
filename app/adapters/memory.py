@@ -123,16 +123,16 @@ class MemoryUnitOfWorkManager(UnitOfWorkManager):
 
 
 @identify('memory', 'database')
-class Memory(object):
+class MemoryDatabase(object):
 	"""This adapter gives access to each of the memory database classes that
 	are to be used by the app for data mutation an querying.
 
 	Methods: get_uowm, get_view
 	"""
 	def __init__(self, cfg: dict):
-		"""MemoryAdapter's constructor.
+		"""MemoryDatabase's constructor.
 
-		cfg: dict -- The memory adapter's configuration
+		cfg: dict -- The memory database adapter's configuration
 		"""
 		pass
 

@@ -32,5 +32,4 @@ RegisterBookCommand = namedtuple(
 conclusion of certain events to driven adapters like event queues, logging
 services, etc...
 """
-BookRegisteredEvent = namedtuple(
-	'BookRegisteredEvent', ['isbn', 'name', 'author', 'content'])
+BookRegisteredEvent = namedtuple('BookRegisteredEvent', ['isbn'])

@@ -40,3 +40,7 @@ Changelog
 
 * __06-25-2019__:
 	* Created main function's logic of creating and configuring the app's adapters using the Builder pattern; 
+	* Removed most command messages that use a view since it makes more sense for the adapter to have access to the view directly;
+	* Simplified the builders logic at settings.py;
+	* Adding sqlite adapter;
+	* Got application to work;

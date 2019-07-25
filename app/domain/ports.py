@@ -15,9 +15,9 @@ Classes: MessageBus
 import abc
 from collections import defaultdict
 
+from . import messages
 from .model import Book
 from .errors import CommandAlreadySubscribedError
-from .messages import COMMANDS
 
 
 """
@@ -184,7 +184,7 @@ class MessageBus(object):
 
 		Params
 		------
-		msg -- a command or event that need to be handled
+		msg -- a command or event instance that needs to be handled
 		"""
 		subscribers = self.subscribers[type(msg).__name__]
 		for subscriber in subscribers:
@@ -195,15 +195,15 @@ class MessageBus(object):
 
 		Params
 		------
-		msg -- the command or event that the handler wants to subscribe to
+		msg -- the command or event class that the handler wants to subscribe
 		handler -- the handler that wants to subscribe
 		"""
 		subscribers = self.subscribers[msg.__name__]
 
 		# Commands should have a 1:1 relationship with handlers.
-		if type(msg).__name__ in COMMANDS and len(subscribers) > 0:
+		if msg.__name__ in messages.COMMANDS and len(subscribers) > 0:
 			raise CommandAlreadySubscribedError(
 				'The command \'{0}\' already has a handler subscribed to it.' \
-				.format(type(msg).__name__))
+				.format(msg.__name__))
 
 		subscribers.append(handler)

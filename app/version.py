@@ -9,12 +9,7 @@ from os.path import dirname, join
 
 
 def version() -> str:
-    """Get package version
-    
-    Returns
-    -------
-    version : str
-    """
+    """Get package version."""
     with open(join(dirname(__file__), 'VERSION')) as f:
         return f.read().strip()
 

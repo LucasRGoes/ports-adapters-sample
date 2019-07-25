@@ -5,18 +5,13 @@ Messages
 adapters to talk to the application and for the application to talk with driven
 adapters in a technology agnostic way.
 
-Classes: RegisterBookCommand, ReadBookCommand, ViewBooksCommand,
-ViewBookByIsbnCommand, ViewBooksByNameCommand, ViewBooksByAuthorCommand,
-BookRegisteredEvent
+Classes: RegisterBookCommand, BookRegisteredEvent
 """
 
 from collections import namedtuple
 
 
-COMMANDS = ['RegisterBookCommand', 'ReadBookCommand', 'ViewBooksCommand',
-			'ViewBookByIsbnCommand', 'ViewBooksByNameCommand',
-			'ViewBooksByAuthorCommand']
-
+COMMANDS = ['RegisterBookCommand']
 EVENTS = ['BookRegisteredEvent']
 
 
@@ -31,16 +26,6 @@ use cases of the application.
 """
 RegisterBookCommand = namedtuple(
 	'RegisterBookCommand', ['isbn', 'name', 'author', 'content'])
-
-ReadBookCommand = namedtuple('ReadBookCommand', ['isbn'])
-
-ViewBooksCommand = namedtuple('ViewBooksCommand', [])
-
-ViewBookByIsbnCommand = namedtuple('ViewBookByIsbnCommand', ['isbn'])
-
-ViewBooksByNameCommand = namedtuple('ViewBooksByNameCommand', ['name'])
-
-ViewBooksByAuthorCommand = namedtuple('ViewBooksByAuthorCommand', ['author'])
 
 
 """These are the application's events. They are used to give feedback over

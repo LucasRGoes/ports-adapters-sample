@@ -1,12 +1,14 @@
 """A memory database adapter."""
 
+import logging
+
 from ..settings import identify
 from ..domain.model import Book
 from ..domain.ports import BookRepository, BookView, UnitOfWork, \
 						   UnitOfWorkManager
 
 
-BOOKS_STORAGE = {}
+LOGGER = logging.getLogger(__name__)
 
 
 class MemoryBookRepository(BookRepository):
@@ -17,12 +19,15 @@ class MemoryBookRepository(BookRepository):
 	"""
 	def __init__(self):
 		"""MemoryBookRepository's constructor."""
-		pass
+		global book_storage 
+		self.book_storage = book_storage
 
 	def save(self, book: Book):
 		"""View @app.domain.ports.BookRepository."""
-		BOOKS_STORAGE[book.isbn] = {'name': book.name, 'author': book.author,
-									'content': book.content}
+		LOGGER.debug('Saving book: {0} ...'.format(book.__repr__()))
+		self.book_storage[book.isbn] = {'name': book.name,
+										'author': book.author,
+										'content': book.content}
 
 
 class MemoryBookView(BookView):
@@ -32,16 +37,17 @@ class MemoryBookView(BookView):
 	"""
 	def __init__(self):
 		"""MemoryBookView's constructor."""
-		pass
+		global book_storage 
+		self.book_storage = book_storage
 
 	def get_all(self) -> list:
 		"""View @app.domain.ports.BookView."""
 		return [Book(key, value['name'], value['author'], value['content']) \
-				for key, value in BOOKS_STORAGE.items()]
+				for key, value in self.book_storage.items()]
 
 	def get_by_isbn(self, isbn: str) -> Book:
 		"""View @app.domain.ports.BookView."""
-		book = BOOKS_STORAGE.get(isbn)
+		book = self.book_storage.get(isbn)
 
 		if book is not None:
 			return Book(isbn, book['name'], book['author'], book['content'])
@@ -51,7 +57,7 @@ class MemoryBookView(BookView):
 	def get_by_name(self, name: str) -> list:
 		"""View @app.domain.ports.BookView."""
 		books = []
-		for key, value in BOOKS_STORAGE.items():
+		for key, value in self.book_storage.items():
 			if value['name'] == name:
 				books.append(
 					Book(key, value['name'], value['author'], value['content'])
@@ -62,7 +68,7 @@ class MemoryBookView(BookView):
 	def get_by_author(self, author: str) -> list:
 		"""View @app.domain.ports.BookView."""
 		books = []
-		for key, value in BOOKS_STORAGE.items():
+		for key, value in self.book_storage.items():
 			if value['author'] == author:
 				books.append(
 					Book(key, value['name'], value['author'], value['content'])
@@ -97,7 +103,7 @@ class MemoryUnitOfWork(UnitOfWork):
 		pass
 
 	@property
-	def books(self) -> BookRepository:
+	def books(self) -> MemoryBookRepository:
 		"""View @app.domain.ports.UnitOfWork."""
 		return MemoryBookRepository()
 
@@ -117,9 +123,9 @@ class MemoryUnitOfWorkManager(UnitOfWorkManager):
 
 
 @identify('memory', 'database')
-class MemoryAdapter(object):
-	"""The adapter class to be used by the application. It gives access to
-	each of the memory database classes that are to be used by the app.
+class Memory(object):
+	"""This adapter gives access to each of the memory database classes that
+	are to be used by the app for data mutation an querying.
 
 	Methods: get_uowm, get_view
 	"""
@@ -130,20 +136,16 @@ class MemoryAdapter(object):
 		"""
 		pass
 
-	def get_uowm(self):
-		"""Returns an instance of a MemoryUnitOfWorkManager.
+	def set_up(self):
+		"""Configures the memory database by creating a shared dictionary to
+		hold the data."""
+		global book_storage
+		book_storage = {}
 
-		Returns
-		-------
-		uowm: MemoryUnitOfWorkManager
-		"""
+	def get_uowm(self) -> MemoryUnitOfWorkManager:
+		"""Returns an instance of a MemoryUnitOfWorkManager."""
 		return MemoryUnitOfWorkManager()
 
-	def get_view(self):
-		"""Returns an instance of a MemoryBookView.
-
-		Returns
-		-------
-		view: MemoryBookView
-		"""
+	def get_view(self) -> MemoryBookView:
+		"""Returns an instance of a MemoryBookView."""
 		return MemoryBookView()

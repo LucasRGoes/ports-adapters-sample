@@ -113,20 +113,17 @@ class UnitOfWork(abc.ABC):
 	Methods: __enter__, __exit__, commit, rollback, books
 	"""
 	@abc.abstractmethod
-	def __enter__(self) -> UnitOfWork:
+	def __enter__(self):
 		"""Magic method for Python's 'with' usage. This command is executed
 		whenever a new with is created for a unit of work.
-
-		Returns
-		-------
-		unit_of_work: returns itself for usage inside Python's 'with'
 		"""
 		pass
 
 	@abc.abstractmethod
 	def __exit__(self, type, value, traceback):
 		"""Magic method for Python's 'with' usage. This command is executed
-		whenever a with ends from a unit of work."""
+		whenever a with ends from a unit of work.
+		"""
 		pass
 
 	@abc.abstractmethod
@@ -182,7 +179,8 @@ class MessageBus(object):
 		self.subscribers = defaultdict(list)
 
 	def handle(self, msg):
-		"""Handles the incoming message by executing the handlers associated with it.
+		"""Handles the incoming message by executing the handlers associated
+		with it.
 
 		Params
 		------
@@ -200,7 +198,7 @@ class MessageBus(object):
 		msg -- the command or event that the handler wants to subscribe to
 		handler -- the handler that wants to subscribe
 		"""
-		subscribers = self.subscribers[type(msg).__name__]
+		subscribers = self.subscribers[msg.__name__]
 
 		# Commands should have a 1:1 relationship with handlers.
 		if type(msg).__name__ in COMMANDS and len(subscribers) > 0:

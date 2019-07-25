@@ -10,7 +10,7 @@ __email__ = 'lucas.rd.goes@gmail.com'
 
 import logging
 
-from . import domain, settings
+from . import domain, handlers, settings
 from .version import __version__
 
 
@@ -28,51 +28,69 @@ def main():
 	logger.info('Started sample book managing application v{0}.' \
 				.format(__version__))
 
-	# Creates director to create the app's adapters.
-	director = settings.Director()
+	"""Creates message bus for exchange of commands and events with the
+	adapters.
+	"""
+	bus = domain.ports.MessageBus()
+
+	# Creates director and list of builders to make the app's adapters.
+	director = settings.Director(bus)
+	builders = settings.Builder.__subclasses__()
 
 	# Configuring senders.
 	# sender_builders = app.senders
 
-	# Configuring repository.
-	database_builder = app.database
+	# Configuring database.
+	database = app.database
+	database_builder = next(
+		b for b in builders if b.tech == database and b.ctx == 'database')
+	director.set_builder(database_builder())
+	database_adapter = director.get_adapter()
 
-	# Creates message bus and its handlers.
+	# Creates handlers and subscribtions to its commands and events.
+	bus.subscribe(
+		domain.messages.RegisterBookCommand,
+		handlers.RegisterBookHandler(database_adapter.get_uowm())
+	)
+	bus.subscribe(
+		domain.messages.ReadBookCommand,
+		handlers.ReadBookHandler(database_adapter.get_view())
+	)
+	bus.subscribe(
+		domain.messages.ViewBooksCommand,
+		handlers.ViewBooksHandler(database_adapter.get_view())
+	)
+	bus.subscribe(
+		domain.messages.ViewBookByIsbnCommand,
+		handlers.ViewBookByIsbnHandler(database_adapter.get_view())
+	)
+	bus.subscribe(
+		domain.messages.ViewBooksByNameCommand,
+		handlers.ViewBooksByNameHandler(database_adapter.get_view())
+	)
+	bus.subscribe(
+		domain.messages.ViewBooksByAuthorCommand,
+		handlers.ViewBooksByAuthorHandler(database_adapter.get_view())
+	)
 
 	# Configuring interfaces.
-	interface_builders = app.interfaces
-
-	interfaces = []
-	for interface_builder in interface_builders:
-		director.set_builder(interface_builder)
-
-		adapter = director.get_adapter()
-
-		interfaces.append(adapter)
+	interfaces = app.interfaces
+	interface_adapters = []
+	for interface in interfaces:
+		interface_builder = next(
+			b for b in builders if b.tech == interface and b.ctx == 'interface'
+		)
+		director.set_builder(interface_builder())
+		interface_adapters.append(director.get_adapter())
 
 	# Starting application.
-
-
-
-	# # Creates driven adapter
-	# db_uowm = adapters.MemoryUnitOfWorkManager()
-	# db_view = adapters.MemoryBookView()
-
-	# # Creates CommandBus
-	# command_bus = controller.CommandBus(db_uowm, db_view)
-
-	# # Configures and starts adapters
-	# driver_adapter = app_config.driver_adapter
-	# if driver_adapter == 'mqtt':
-	# 	driver_config = settings.MqttDriverConfig()
-	# 	driver_adapter = adapters.MqttAdapter(driver_config, command_bus)
-
-	# # Runs driver adapter and awaits for any external interruption
-	# try:
-	# 	driver_adapter.start()
-	# except KeyboardInterrupt:
-	# 	driver_adapter.stop()
-	# 	logger.info('The application has been interrupted.')
+	try:
+		for interface_adapter in interface_adapters:
+			interface_adapter.start()
+	except KeyboardInterrupt:
+		for interface_adapter in interface_adapters:
+			interface_adapter.stop()
+		logger.info('The application has been interrupted.')
 
 
 if __name__ == '__main__':

@@ -27,7 +27,8 @@ APP_LOGGER_NAME = os.getenv('APP_LOGGER_NAME', 'app')
 
 
 def identify(tech: str, ctx: str):
-	"""Adds two attributes to a class: (1) the class technology (mqtt, sqlite, etc...) and (2) the class context (database, interface or sender).
+	"""Adds two attributes to a class: (1) the class technology (mqtt, sqlite,
+	etc...) and (2) the class context (database, interface or sender).
 
 	Params
 	------
@@ -39,8 +40,8 @@ def identify(tech: str, ctx: str):
 	func -- the decorator that adds the attributes to the class
 	"""
 	def decorator(cls):
-		setattr(cls, 'tech', property(getattr(cls, 'tech', tech)))
-		setattr(cls, 'ctx', property(getattr(cls, 'ctx', ctx)))
+		setattr(cls, 'tech', tech)
+		setattr(cls, 'ctx', ctx)
 
 		return cls
 
@@ -85,13 +86,18 @@ class Builder(abc.ABC):
 
 
 class Director(object):
-	"""The application's director that builds the necessary modules for it to work. It follows the Builder design pattern.
+	"""The application's director that builds the necessary modules for it to
+	work. It follows the Builder design pattern.
 
 	Methods: set_builder, get_repository, get_interface, get_sender
 	"""
-	def __init__(self):
-		"""Director's constructor."""
+	def __init__(self, bus):
+		"""Director's constructor.
+
+		bus -- a message bus used by adapters
+		"""
 		self.builder = None
+		self.bus = bus
 
 	def set_builder(self, builder: Builder):
 		"""Configures the director's builder.
@@ -109,14 +115,22 @@ class Director(object):
 		-------
 		adapter -- the built adapter
 		"""
-		#.format(self.builder.name)
-		# mod = importlib.import_module(
-		# 	'app.adapters.{0}'.format(self.builder.name))
+		importlib.import_module('app.adapters.{0}'.format(self.builder.name))
 
-		tst = self.builder()
-		print(tst['tech'])
+		classes = inspect.getmembers(
+			sys.modules['app.adapters.{0}'.format(self.builder.name)],
+			inspect.isclass
+		)
 
-		return ''
+		adapter = next(
+			cls_ for cls_ in classes \
+			if hasattr(cls_[1], 'tech') and hasattr(cls_[1], 'ctx')
+		)[1]
+
+		if adapter.ctx == 'interface':
+			return adapter(self.builder(), self.bus)
+		else:
+			return adapter(self.builder())
 
 
 @identify('mqtt', 'interface')
@@ -222,15 +236,7 @@ class ApplicationConfig(object):
 	"""
 	def __init__(self):
 		"""ApplicationConfig's constructor."""
-		self.name_builder_map = {
-			'databases': {
-				'memory': MemoryDatabaseBuilder
-			},
-			'interfaces': {
-				'mqtt': MqttInterfaceBuilder
-			},
-			'senders': {}
-		}
+		pass
 
 	@property
 	def logger_name(self) -> str:
@@ -271,13 +277,7 @@ class ApplicationConfig(object):
 		-------
 		repository: str
 		"""
-		database = os.getenv('APP_DATABASE', 'memory').lower()
-
-		try:
-			return self.name_builder_map['databases'][database]
-		except Exception as err:
-			raise ValueError(
-				'The chosen database has no builder mapped to it.') from err
+		return os.getenv('APP_DATABASE', 'memory').lower()
 
 	@property
 	def interfaces(self) -> list:
@@ -290,13 +290,7 @@ class ApplicationConfig(object):
 		interfaces = os.getenv('APP_INTERFACES', 'mqtt').lower()
 
 		# Parses it into a list.
-		interfaces = re.sub(r'\ ', '', interfaces).split(',')
-
-		try:
-			return [self.name_builder_map['interfaces'][i] for i in interfaces]
-		except Exception as err:
-			raise ValueError(
-				'One of the chosen interfaces has no builder mapped.') from err
+		return re.sub(r'\ ', '', interfaces).split(',')
 
 	@property
 	def senders(self) -> list:
@@ -309,10 +303,4 @@ class ApplicationConfig(object):
 		senders = os.getenv('APP_SENDERS', 'mqtt').lower()
 
 		# Parses it into a list.
-		senders = re.sub(r'\ ', '', senders).split(',')
-
-		try:
-			return [self.name_builder_map['senders'][s] for s in senders]
-		except Exception as err:
-			raise ValueError(
-				'One of the chosen senders has no builder mapped.') from err
+		return re.sub(r'\ ', '', senders).split(',')

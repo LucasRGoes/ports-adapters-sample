@@ -1,36 +1,38 @@
-"""A MQTT driver adapter to act as an interface for the application."""
+"""A MQTT interface adapter."""
 
 import json
 import logging
 
 import paho.mqtt.client as mqtt
 
+from ..settings import identify
 from ..domain.messages import RegisterBookCommand, ReadBookCommand, \
 							  ViewBooksCommand, ViewBookByIsbnCommand, \
 							  ViewBooksByNameCommand, ViewBooksByAuthorCommand
 
 
-class Mqtt(object):
+@identify('mqtt', 'interface')
+class MqttAdapter(object):
 	"""Listens to incoming MQTT packages and executes the associated commands.
 
 	Methods: start, stop
 	"""
-	def __init__(self, cfg, msg_bus):
+	def __init__(self, cfg: dict, bus):
 		"""Mqtt's constructor.
 		
 		Params
 		------
-		cfg: -- MQTT client's configuration
-		msg_bus: -- the message bus used when dispatching commands
+		cfg: dict -- the MQTT adapter's configuration
+		bus: -- the message bus used to handle incoming commands
 		"""
-		self.logger = logging.getLogger(config.logger_name)
-		self.command_bus = command_bus
+		self.logger = logging.getLogger(cfg['logger_name'])
+		self.bus = bus
 
-		self.topic = config.topic
-		self.host = config.host
-		self.port = config.port
-		self.username = config.username
-		self.password = config.password
+		self.topic = cfg['topic']
+		self.host = cfg['host']
+		self.port = cfg['port']
+		self.username = cfg['username']
+		self.password = cfg['password']
 
 		self.client = mqtt.Client()
 		self.client.username_pw_set(self.username, password=self.password)
@@ -98,7 +100,7 @@ class Mqtt(object):
 
 			self.logger.debug('Command created: {0}'.format(cmd))
 
-			ret = self.command_bus.dispatch(cmd)
+			ret = self.bus.handle(cmd)
 			if ret is not None:
 				self.logger.info('Response: {0}'.format(ret))
 

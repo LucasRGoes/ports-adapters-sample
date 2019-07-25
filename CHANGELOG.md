@@ -37,3 +37,6 @@ Changelog
 	* Reviewing adapters;
 	* Using Builder pattern to set up the modules of the application;
 	* Creation decorator to help with the identification of the builders and adapters;
+
+* __06-25-2019__:
+	* Created main function's logic of creating and configuring the app's adapters using the Builder pattern; 

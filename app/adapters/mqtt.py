@@ -2,6 +2,7 @@
 
 import json
 import logging
+from multiprocessing import Process
 
 import paho.mqtt.client as mqtt
 
@@ -9,7 +10,7 @@ from ..settings import identify
 from ..domain.messages import RegisterBookCommand
 
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger('sample')
 
 
 @identify('mqtt', 'interface')
@@ -56,15 +57,12 @@ class Mqtt(object):
 		"""
 		self.view = view
 	
-	def start(self):
+	def run(self):
 		"""Method to initialize the adapter by connecting to the broker and
 		listening to incoming requests."""
 		self.client.connect(self.host, self.port)
-		self.client.loop_forever()
-
-	def stop(self):
-		"""Finishes MQTT connection."""
-		self.client.disconnect()
+		server = Process(target=self.client.loop_forever)
+		server.start()
 
 	def __on_connect(self):
 		"""Creates MQTT callback for estabilished connections."""

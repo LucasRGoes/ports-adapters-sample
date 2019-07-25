@@ -44,3 +44,5 @@ Changelog
 	* Simplified the builders logic at settings.py;
 	* Adding sqlite adapter;
 	* Got application to work;
+	* Added coloredlogs library to debug the logs more easily;
+	* Adding flask adapter to act as an interface for the application;

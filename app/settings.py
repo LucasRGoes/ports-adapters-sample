@@ -154,6 +154,40 @@ class MqttInterfaceBuilder(Builder):
 		return os.getenv('MQTT_DRIVER_PASSWORD')
 
 
+@identify('flask', 'interface')
+class FlaskInterfaceBuilder(Builder):
+	"""Builder class for setting up a Flask driver adapter.
+
+	Methods: __call__, _get_host, __get_port, __get_debug
+	"""
+	def __init__(self):
+		"""FlaskInterfaceBuilder's constructor."""
+		pass
+
+	def __call__(self) -> dict:
+		"""View @settings.Builder"""
+		return {
+			'host': self.__get_host(),
+			'port': self.__get_port(),
+			'debug': self.__get_debug()
+		}
+
+	def __get_host(self) -> str:
+		"""Returns host of the Flask server."""
+		return os.getenv('FLASK_DRIVER_HOST', '0.0.0.0')
+
+	def __get_port(self) -> int:
+		"""Returns port of the Flask server."""
+		try:
+			return int(os.getenv('FLASK_DRIVER_PORT'))
+		except:
+			return 5000
+
+	def __get_debug(self) -> str:
+		"""Returns debug flag for Flask server."""
+		return os.getenv('FLASK_DRIVER_DEBUG', False)
+
+
 @identify('memory', 'database')
 class MemoryDatabaseBuilder(Builder):
 	"""Builder class for setting up a memory database driven adapter.
@@ -211,6 +245,21 @@ class ApplicationConfig(object):
 		   logger_level = 'INFO'
 
 		return logger_level
+
+	@property
+	def logger_styles(self) -> str:
+		"""Returns the logger color for each level of logging."""
+		return ('info=blue;'
+				'warning=green;'
+				'error=red;'
+				'critical=red,bold;'
+				'debug=white')
+	
+	@property
+	def logger_format(self) -> str:
+		"""Returns the logger format to be used on the logger."""
+		return ('%(asctime) -19s | %(levelname) -8s | %(threadName) -10s | '
+				'%(funcName) -16s | %(message)s')
 
 	@property
 	def database(self) -> str:

@@ -11,6 +11,8 @@ __email__ = 'lucas.rd.goes@gmail.com'
 import sys
 import logging
 
+import coloredlogs
+
 from . import domain, handlers, settings
 from .version import __version__
 
@@ -20,12 +22,12 @@ def main():
 	app = settings.ApplicationConfig()
 
 	# Configuring logger.
-	logging.basicConfig(
-		level=app.logger_level,
-		format='%(asctime) -19s | %(levelname) -8s | %(threadName) -10s |'
-			   ' %(funcName) -16s | %(message)s'
+	logger = logging.getLogger('sample')
+	coloredlogs.install(
+	    fmt=app.logger_format,
+	    level_styles=coloredlogs.parse_encoded_styles(app.logger_styles),
+	    level=app.logger_level, logger=logger, milliseconds=True
 	)
-	logger = logging.getLogger(__name__)
 	logger.info('Started sample book managing application v{0}' \
 				.format(__version__))
 
@@ -105,13 +107,9 @@ def main():
 				.format([type(i).__name__ for i in interface_adapters]))
 
 	# Starting application.
-	try:
-		for interface_adapter in interface_adapters:
-			interface_adapter.start()
-	except KeyboardInterrupt:
-		for interface_adapter in interface_adapters:
-			interface_adapter.stop()
-		logger.info('The application has been interrupted')
+	logger.debug('Starting application ...')
+	for interface_adapter in interface_adapters:
+		interface_adapter.run()
 
 
 if __name__ == '__main__':

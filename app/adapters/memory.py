@@ -8,7 +8,7 @@ from ..domain.ports import BookRepository, BookView, UnitOfWork, \
 						   UnitOfWorkManager
 
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger('sample')
 
 
 class MemoryBookRepository(BookRepository):

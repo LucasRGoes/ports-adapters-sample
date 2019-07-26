@@ -9,7 +9,7 @@ The project was created in order to facilitate the study of the ports and adapte
 
 ## Architecture
 
-![](./docs/resources/architecture.png?raw=true)
+![](./docs/resources/images/architecture.png?raw=true)
 
 ## References
 * [Ports and Adapters Pattern](https://softwarecampament.wordpress.com/portsadapters/#tc2-1)

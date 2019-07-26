@@ -178,4 +178,3 @@ class SqliteDatabase(object):
 	def get_view(self) -> SqliteBookView:
 		"""Returns an instance of a SqliteBookView."""
 		return SqliteBookView(self.location)
-

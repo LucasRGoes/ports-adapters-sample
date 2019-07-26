@@ -50,3 +50,9 @@ Changelog
 	* Created QueueSender abstract base class;
 	* Created MqttSender based on the QueueSender;
 	* Handlers for commands that generate events now need to have access to the bus to dispatch those events;
+
+* __06-26-2019__:
+	* Started creation of the application's tests;
+	* Added equality method to book model;
+	* Changed start and stop methods logic at interfaces to work as threads instead of process;
+	* Using gevent with Flask;

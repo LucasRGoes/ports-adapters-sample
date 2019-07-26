@@ -171,7 +171,7 @@ class UnitOfWorkManager(abc.ABC):
 say it is the application's SPI for sending messages.
 	An application can have different types of abstract base classes for
 different types of senders like email, queues and logging. For this simple
-app we are gonna implement only one base type.
+app we are gonna implement only one base type, a queue type of sender.
 """
 class QueueSender(abc.ABC):
 	"""This abstract base class should be implemented by all adapters used to

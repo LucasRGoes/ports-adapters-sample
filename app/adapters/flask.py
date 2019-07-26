@@ -1,12 +1,17 @@
 """A Flask REST adapter to use as an interface for the application."""
 
-from multiprocessing import Process
+import logging
+import threading
 
 from flask import Flask
+from gevent.pywsgi import WSGIServer
 from flask_restful import Resource, Api, reqparse
 
 from ..settings import identify
 from ..domain.messages import RegisterBookCommand
+
+
+LOGGER = logging.getLogger('sample')
 
 
 class BookResource(Resource):
@@ -171,12 +176,12 @@ class FlaskInterface(object):
 		"""
 		self.host = cfg['host']
 		self.port = cfg['port']
-		self.debug = cfg['debug']
 
 		app = Flask(__name__)
-		self.server = Process(target=app.run,
-							  args=(self.host, self.port, self.debug))
 		self.api = Api(app)
+		self.http_server = WSGIServer((self.host, self.port), app)
+		self.thread_server = threading.Thread(
+			target=self.http_server.serve_forever)
 
 	def set_message_bus(self, bus):
 		"""Sets the message bus to be used by the adapter to execute commands.
@@ -215,4 +220,11 @@ class FlaskInterface(object):
 			resource_class_kwargs={'view': self.view}
 		)
 
-		self.server.start()
+		LOGGER.info('Starting HTTP server')
+		self.thread_server.start()
+
+	def stop(self):
+		"""Method to stop the HTTP server."""
+		LOGGER.info('Stopping HTTP server')
+		self.http_server.stop()
+		self.thread_server.join()

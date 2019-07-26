@@ -26,6 +26,18 @@ class Book(object):
 		self.author = author
 		self.content = content
 
+	def __eq__(self, other) -> bool:
+		"""Python's magic method for object comparison.
+
+		Params
+		------
+		other -- another book for comparison
+		"""
+		return self.isbn == other.isbn \
+			   and self.name == other.name \
+			   and self.author == other.author \
+			   and self.content == other.content
+
 	def __str__(self) -> str:
 		"""End user's representation."""
 		return ('My name is {0}, a book written by {1} with ISBN: {2}.'

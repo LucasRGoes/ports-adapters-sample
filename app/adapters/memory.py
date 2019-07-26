@@ -127,7 +127,7 @@ class MemoryDatabase(object):
 	"""This adapter gives access to each of the memory database classes that
 	are to be used by the app for data mutation an querying.
 
-	Methods: get_uowm, get_view
+	Methods: set_up, get_uowm, get_view
 	"""
 	def __init__(self, cfg: dict):
 		"""MemoryDatabase's constructor.

@@ -205,8 +205,7 @@ class FlaskInterfaceBuilder(Builder):
 		"""View @settings.Builder"""
 		return {
 			'host': self.__get_host(),
-			'port': self.__get_port(),
-			'debug': self.__get_debug()
+			'port': self.__get_port()
 		}
 
 	def __get_host(self) -> str:
@@ -219,13 +218,6 @@ class FlaskInterfaceBuilder(Builder):
 			return int(os.getenv('FLASK_DRIVER_PORT'))
 		except:
 			return 5000
-
-	def __get_debug(self) -> str:
-		"""Returns debug flag for Flask server."""
-		if os.getenv('FLASK_DRIVER_DEBUG', False) in ['true', 'True', True]:
-			return True
-		else:
-			return False
 
 
 @identify('mqtt', 'sender')

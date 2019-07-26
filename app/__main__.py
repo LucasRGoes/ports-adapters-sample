@@ -9,7 +9,9 @@ __email__ = 'lucas.rd.goes@gmail.com'
 """
 
 import sys
+import time
 import logging
+import warnings
 
 import coloredlogs
 
@@ -147,6 +149,21 @@ def main():
 	for interface_adapter in interface_adapters:
 		interface_adapter.run()
 
+	# Waiting until the application is stopped.
+	try:
+		while(True):
+			time.sleep(10)
+	except KeyboardInterrupt:
+		for interface_adapter in interface_adapters:
+			interface_adapter.stop()
+		logger.info('Ending application')
+
 
 if __name__ == '__main__':
+	from gevent import monkey
+
+	with warnings.catch_warnings():
+		warnings.simplefilter('ignore')
+		monkey.patch_all()
+
 	main()

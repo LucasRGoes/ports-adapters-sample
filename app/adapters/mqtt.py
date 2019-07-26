@@ -2,7 +2,6 @@
 
 import json
 import logging
-from multiprocessing import Process
 
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
@@ -62,9 +61,15 @@ class MqttInterface(object):
 	def run(self):
 		"""Method to initialize the adapter by connecting to the broker and
 		listening to incoming requests."""
+		LOGGER.info('Starting MQTT client')
 		self.client.connect(self.host, self.port)
-		server = Process(target=self.client.loop_forever)
-		server.start()
+		self.client.loop_start()
+
+	def stop(self):
+		"""Method to stop the adapter."""
+		LOGGER.info('Stopping MQTT client')
+		self.client.loop_stop(force=False)
+		self.client.disconnect()
 
 	def __on_connect(self):
 		"""Creates MQTT callback for estabilished connections."""
@@ -166,6 +171,8 @@ class MqttSender(QueueSender):
 
 	def send(self, msg):
 		"""View @app.domain.ports.QueueSender."""
+		LOGGER.debug(
+			'Sending message of triggered event | event: {0}'.format(msg))
 		if self.username is not None and self.password is not None:
 			publish.single(
 				self.topic, payload=msg, hostname=self.host, port=self.port,
